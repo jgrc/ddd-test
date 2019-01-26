@@ -1,0 +1,8 @@
+/vendor
+/.idea
+/composer.lock
+/bin/*
+!bin/console
+!bin/composer
+/var/*
+!/var/data/.gitkeep

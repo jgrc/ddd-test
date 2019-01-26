@@ -1,0 +1,9 @@
+parameters:
+  user.repository.file: 'var/data/users.dat'
+  event.store.file: 'var/data/events.json'
+  logger.file: 'var/log/log.log'
+  logger.max.files: 7
+  logger.level: 100
+
+imports:
+  - { resource: services.yaml }

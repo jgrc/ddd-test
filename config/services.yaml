@@ -1,0 +1,94 @@
+services:
+  # Domain
+  domain.model.user-repository:
+    class: Dddtest\Infrastructure\Repository\UserRepositoryInFile
+    arguments:
+      $file: '%user.repository.file%'
+
+  domain.service.subscribe:
+    class: Dddtest\Domain\Service\Subscribe
+    arguments:
+      $userRepository: '@domain.model.user-repository'
+
+  domain.service.subscribed:
+    class: Dddtest\Domain\Service\Subscribed
+    arguments:
+      $userRepository: '@domain.model.user-repository'
+
+  # Application
+  application.subscribe:
+    class: Dddtest\Application\Subscribe\Subscribe
+    arguments:
+      $service: '@domain.service.subscribe'
+      $eventBus: '@event.bus'
+
+  application.subscribed:
+    class: Dddtest\Application\Subscribed\Subscribed
+    arguments:
+      $service: '@domain.service.subscribed'
+
+  # Message Bus
+  message.bus:
+    class: Symfony\Component\Messenger\MessageBus
+    arguments:
+      $middlewareHandlers: ['@logger.middleware', '@handle.middleware']
+
+  logger.middleware:
+    class: Dddtest\Infrastructure\Ui\Bus\LoggerMiddleware
+    arguments:
+      $logger: '@logger'
+
+  logger:
+    class: Monolog\Logger
+    arguments:
+      $name: 'log'
+      $handlers: ['@logger.rotating-file.handler']
+
+  logger.rotating-file.handler:
+    class: Monolog\Handler\RotatingFileHandler
+    arguments:
+      $filename: '%logger.file%'
+      $maxFiles: '%logger.max.files%'
+      $level: '%logger.level%'
+
+  handle.middleware:
+    class: Symfony\Component\Messenger\Middleware\HandleMessageMiddleware
+    arguments:
+      $handlersLocator: '@handlers.locator'
+
+  handlers.locator:
+    class: Symfony\Component\Messenger\Handler\HandlersLocator
+    arguments:
+      $handlers:
+        Dddtest\Application\Subscribe\SubscribeCommand:
+          dummy: '@application.subscribe'
+        Dddtest\Application\Subscribed\SubscribedQuery:
+          dummy: '@application.subscribed'
+
+  event.bus:
+    class: Symfony\Component\Messenger\MessageBus
+    arguments:
+      $middlewareHandlers: ['@event.store.middleware']
+
+  event.store.middleware:
+    class: Dddtest\Infrastructure\Ui\Bus\EventStoreMiddleware
+    arguments:
+      $file: '%event.store.file%'
+
+  # UI
+  command.subscribe:
+    class: Dddtest\Infrastructure\Ui\Console\UserSubscribe
+    arguments:
+      $messageBus: '@message.bus'
+
+  command.subscribed:
+    class: Dddtest\Infrastructure\Ui\Console\UsersSubscribed
+    arguments:
+      $messageBus: '@message.bus'
+
+  console:
+    class: Symfony\Component\Console\Application
+    calls:
+      - [add, ['@command.subscribe']]
+      - [add, ['@command.subscribed']]
+    public: true

@@ -1,0 +1,38 @@
+{
+    "name": "jgrc/ddd-test",
+    "description": "Practicing DDD + CQS + CQRS",
+    "authors": [
+        {
+            "name": "jgrc",
+            "email": "jgrodriguezcarrion@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "Dddtest": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "Tests": "tests"
+        }
+    },
+    "require": {
+        "php": "^7.1",
+        "ext-json": "*",
+        "symfony/console": "^4.2",
+        "ramsey/uuid": "^3.8",
+        "beberlei/assert": "^3.2",
+        "symfony/messenger": "^4.2",
+        "monolog/monolog": "^1.24",
+        "symfony/dependency-injection": "^4.2",
+        "symfony/yaml": "^4.2",
+        "symfony/config": "^4.2"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.4",
+        "symfony/var-dumper": "^4.2",
+        "behat/behat": "^3.5",
+        "phpunit/phpunit": "^7.5"
+    }
+}
